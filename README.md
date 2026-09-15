@@ -382,12 +382,17 @@ Everyone at Trail of Bits should set up at least **Context7** and **Exa** as glo
 
 #### Setup
 
-MCP servers are configured in `.mcp.json` files. Claude Code merges configs from two locations:
+Use Claude Code's CLI to register personal servers at **user scope**. User-scoped servers are stored in `~/.claude.json`, are private to your account, and load across projects. Do not create or edit `~/.mcp.json`; Claude Code does not use that path as a user-scope configuration.
 
-- **`~/.mcp.json`** -- global servers available in every session
-- **`.mcp.json` in the project root** -- project-specific servers
+```bash
+claude mcp add context7 --scope user -- npx -y @upstash/context7-mcp
+claude mcp add --transport http exa --scope user 'https://mcp.exa.ai/mcp' \
+  --header "x-api-key: $EXA_API_KEY"
+```
 
-Copy `mcp-template.json` from this repo to `~/.mcp.json` for global availability. Replace `your-exa-api-key-here` with your actual key, or remove the `exa` entry if you don't have one. Add project-specific MCP servers (e.g., a local database tool) to the project's `.mcp.json`.
+Set `EXA_API_KEY` before adding Exa, then run `claude mcp list` to confirm that both servers connect.
+
+For servers that should be shared with a team, adapt `mcp-template.json` as `.mcp.json` in the project root. That file is **project-scoped**, can be committed to version control, and requires each user to approve its servers.
 
 ### Local Models
 
