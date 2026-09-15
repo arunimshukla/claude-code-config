@@ -12,7 +12,6 @@ Files to fetch when needed:
 - `settings.json`
 - `claude-md-template.md`
 - `rules/python.md`, `rules/rust.md`, `rules/typescript.md`, `rules/bash.md`, `rules/github-actions.md`
-- `mcp-template.json`
 - `scripts/statusline.sh`
 - `commands/review-pr.md`
 - `commands/fix-issue.md`
@@ -21,13 +20,13 @@ Install into `$CLAUDE_CONFIG_DIR` if it is set, otherwise `~/.claude`. The paths
 
 ## Steps
 
-1. **Inventory what exists.** Read `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.mcp.json`, `~/.claude/statusline.sh`, and check for `~/.claude/rules/`, `~/.claude/commands/review-pr.md`, and `~/.claude/commands/fix-issue.md`. Note which files exist and which don't.
+1. **Inventory what exists.** Read `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, and `~/.claude/statusline.sh`; check for `~/.claude/rules/`, `~/.claude/commands/review-pr.md`, and `~/.claude/commands/fix-issue.md`; and run `claude mcp get context7` and `claude mcp get exa`. Note which files exist, whether each MCP server is configured, and its reported scope. Do not read or edit `~/.claude.json` directly; Claude Code manages it.
 
 2. **Ask the user what to install.** Use AskUserQuestion with a single multi-select question. List each component with a short description. Pre-label components that are missing from `~/.claude/` as recommended. Components:
    - **settings.json** — permissions, hooks, telemetry, statusline config
    - **CLAUDE.md** — global development standards and tool preferences
    - **Language rules** — path-scoped toolchain config for Python, Rust, TypeScript, Bash, and GitHub Actions
-   - **MCP servers** — Context7, Exa, Granola
+   - **MCP servers** — Context7 and Exa
    - **Statusline script** — two-line status bar with context/cost tracking
    - **review-pr command** — multi-agent PR review workflow
    - **fix-issue command** — end-to-end issue fixing workflow
@@ -44,7 +43,15 @@ Install into `$CLAUDE_CONFIG_DIR` if it is set, otherwise `~/.claude`. The paths
 
    - **Language rules**: Create `~/.claude/rules/` and write each fetched rule file into it. Preserve the `paths:` frontmatter exactly — it is what scopes each rule to its language, and a rule without it loads in every session. After writing, read each installed file back and confirm it starts with a `---` frontmatter block containing a non-empty `paths:` list; WebFetch can paraphrase or strip content, and a rule that loses its frontmatter silently becomes always-loaded. Re-fetch and rewrite any file that fails the check. Any rule file the user has already customized gets the same treatment as CLAUDE.md: ask before overwriting. Tell the user to start a new session (or restart Claude Code) so the new rule files are picked up.
 
-   - **MCP servers**: If `~/.mcp.json` doesn't exist, write the fetched template to `~/.mcp.json` and remind the user to replace `your-exa-api-key-here`. If it exists, read it, merge any missing server entries from the template, and show the result before writing.
+   - **MCP servers**: Register each missing server at user scope through the Claude Code CLI. Do not create `~/.mcp.json`.
+
+     ```bash
+     claude mcp add context7 --scope user -- npx -y @upstash/context7-mcp
+     claude mcp add --transport http exa --scope user 'https://mcp.exa.ai/mcp' \
+       --header "x-api-key: $EXA_API_KEY"
+     ```
+
+     Only add Exa when `EXA_API_KEY` is set; otherwise explain what is missing and skip it. After registration, run `claude mcp get context7` and `claude mcp get exa` and confirm that each installed server reports user scope.
 
    - **Statusline script**: Write to `~/.claude/statusline.sh` and `chmod +x` it. Safe to overwrite — it has no user customization.
 
