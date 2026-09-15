@@ -43,7 +43,7 @@ Install into `$CLAUDE_CONFIG_DIR` if it is set, otherwise `~/.claude`. The paths
 
    - **Language rules**: Create `~/.claude/rules/` and write each fetched rule file into it. Preserve the `paths:` frontmatter exactly — it is what scopes each rule to its language, and a rule without it loads in every session. After writing, read each installed file back and confirm it starts with a `---` frontmatter block containing a non-empty `paths:` list; WebFetch can paraphrase or strip content, and a rule that loses its frontmatter silently becomes always-loaded. Re-fetch and rewrite any file that fails the check. Any rule file the user has already customized gets the same treatment as CLAUDE.md: ask before overwriting. Tell the user to start a new session (or restart Claude Code) so the new rule files are picked up.
 
-   - **MCP servers**: Register each missing server at user scope through the Claude Code CLI. Do not create `~/.mcp.json`.
+   - **MCP servers**: Register each missing server at user scope through the Claude Code CLI.
 
      ```bash
      claude mcp add context7 --scope user -- npx -y @upstash/context7-mcp
