@@ -382,7 +382,7 @@ Everyone at Trail of Bits should set up at least **Context7** and **Exa** as glo
 
 #### Setup
 
-Use Claude Code's CLI to register personal servers at **user scope**. User-scoped servers are stored in `~/.claude.json`, are private to your account, and load across projects. Do not create or edit `~/.mcp.json`; Claude Code does not use that path as a user-scope configuration.
+Use Claude Code's CLI to register personal servers at **user scope**. User-scoped servers are stored in `~/.claude.json`, are private to your account, and load across projects.
 
 ```bash
 claude mcp add context7 --scope user -- npx -y @upstash/context7-mcp
